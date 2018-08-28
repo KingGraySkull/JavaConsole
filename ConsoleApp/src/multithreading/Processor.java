@@ -1,26 +1,29 @@
 package multithreading;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.Random;
 
 public class Processor
 {
 	private LinkedList<Integer> list = new LinkedList<>();
-	private int maxCapacity = 10;
+	private int maxCapacity = 10000000;
 	
 	public synchronized void publish() throws InterruptedException
 	{
 		while(true)
 		{
-			if(list.size() == 1)
+			if(list.size() == maxCapacity)
 			{
+				System.out.println("Publisher waiting queue size "+list.size());
+				System.out.println("Publisher waiting..."+new Timestamp(new Date().getTime()));
 				wait();
-				System.out.println("Publisher waiting...");
 			}
 			int randomValue = new Random().nextInt(100);
-			System.out.println("published value "+randomValue);
+			//System.out.println("published value "+randomValue);
 			list.add(randomValue);
-			System.out.println("List Size after Publishing "+list.size());
+			//System.out.println("List Size after Publishing "+list.size());
 			notify();
 		}
 	}
@@ -31,13 +34,16 @@ public class Processor
 		{
 			if(list.isEmpty())
 			{
+				System.out.println("Subscriber waiting queue size "+list.size());
+				System.out.println("Subscriber waiting..."+new Timestamp(new Date().getTime()));
 				wait();
-				System.out.println("Subscriber waiting...");
 			}
-			System.out.println("Value Consumed : "+list.removeFirst());
-			System.out.println("List Size after Consuming "+list.size());
+			list.removeFirst();
+			//System.out.println("Value Consumed : "+list.removeFirst());
+			//System.out.println("List Size after Consuming "+list.size());
 			notify();
-			Thread.sleep(8000);
+			//System.out.println("Subscriber finished ");
+			//Thread.sleep(2000);
 		}
 	}
 	
